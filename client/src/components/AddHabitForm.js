@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AddHabitForm.css';
 import ProgressBar from './ProgressBar';
-import TaskCompletionMarker from './TaskCompletionMarker';
 
 const AddHabitForm = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +17,6 @@ const AddHabitForm = () => {
   });
   const [habits, setHabits] = useState([]);
   const [progress, setProgress] = useState(0);
-  const [daysCompleted, setDaysCompleted] = useState([false, false, false, false, false, false, false]);
   const navigate = useNavigate();
 
   const { name, description, frequency, startDate, reminders, goal, category, priority } = formData;
@@ -65,15 +63,29 @@ const AddHabitForm = () => {
     navigate('/login');
   };
 
+  const markAsDone = async (habitId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.put(`http://localhost:5000/api/habits/${habitId}/complete`, {}, {
+        headers: { Authorization: token }
+      });
+      const updatedHabits = habits.map(habit => {
+        if (habit.id === habitId) {
+          return res.data;
+        }
+        return habit;
+      });
+      setHabits(updatedHabits);
+      updateProgress(updatedHabits);
+    } catch (error) {
+      console.error('Error marking habit as done:', error);
+    }
+  };
+
   const updateProgress = (habits) => {
-    let completed = 0;
-    const days = [false, false, false, false, false, false, false];
-    habits.forEach(habit => {
-      if (habit.completed) completed++;
-      if (habit.dayCompleted) days[habit.dayIndex] = true;
-    });
-    setProgress((completed / habits.length) * 100);
-    setDaysCompleted(days);
+    const today = new Date().toISOString().split('T')[0];
+    const completedToday = habits.filter(habit => habit.completedDays.includes(today)).length;
+    setProgress((completedToday / habits.length) * 100);
   };
 
   return (
@@ -126,18 +138,22 @@ const AddHabitForm = () => {
       <div className="habit-list">
         <h2>Added Habits</h2>
         <ProgressBar progress={progress} />
-        <TaskCompletionMarker daysCompleted={daysCompleted} />
         <ul>
-          {habits.map(habit => (
-            <li key={habit.id}>
-              <strong>{habit.name}</strong>: {habit.description} ({habit.frequency})
-              <p>Start Date: {habit.startDate}</p>
-              <p>Reminders: {habit.reminders ? 'Yes' : 'No'}</p>
-              <p>Goal: {habit.goal}</p>
-              <p>Category: {habit.category}</p>
-              <p>Priority: {habit.priority}</p>
-            </li>
-          ))}
+          {habits.map(habit => {
+            const remainingDays = habit.goal - habit.completedDays.length;
+            return (
+              <li key={habit.id}>
+                <strong>{habit.name}</strong>: {habit.description} ({habit.frequency})
+                <p>Start Date: {habit.startDate}</p>
+                <p>Reminders: {habit.reminders ? 'Yes' : 'No'}</p>
+                <p>Goal: {habit.goal}</p>
+                <p>Category: {habit.category}</p>
+                <p>Priority: {habit.priority}</p>
+                <p>Remaining Days: {remainingDays}</p>
+                <button onClick={() => markAsDone(habit.id)}>Mark as Done</button>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

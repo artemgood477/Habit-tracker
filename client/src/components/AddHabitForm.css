@@ -1,27 +1,93 @@
 .habit-tracker {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-  }
-  
-  .habit-form {
-    width: 45%;
-  }
-  
-  .habit-list {
-    width: 45%;
-  }
-  
-  .habit-list ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .habit-list li {
-    background-color: #f9f9f9;
-    margin: 5px 0;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px 0;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.habit-form {
+  background-color: #f2f2f2;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.habit-form div {
+  margin-bottom: 15px;
+}
+
+.habit-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.habit-form input,
+.habit-form select {
+  width: calc(100% - 22px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.habit-list {
+  margin-top: 30px;
+}
+
+.habit-list h2 {
+  border-bottom: 2px solid #4CAF50;
+  padding-bottom: 10px;
+}
+
+.habit-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.habit-list li {
+  background-color: #ffffff;
+  margin: 10px 0;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.habit-list li strong {
+  font-size: 1.2em;
+}
+
+.habit-list li p {
+  margin: 5px 0;
+}
+
+.progress-bar {
+  background-color: #f3f3f3;
+  border-radius: 20px;
+  padding: 3px;
+  margin: 20px 0;
+}
+
+.progress-bar-fill {
+  display: block;
+  height: 30px;
+  background-color: #4CAF50;
+  border-radius: 15px;
+  text-align: center;
+  color: white;
+  line-height: 30px;
+  transition: width 0.4s ease;
+}

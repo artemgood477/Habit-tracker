@@ -4,7 +4,9 @@ import './ProgressBar.css';
 const ProgressBar = ({ progress }) => {
   return (
     <div className="progress-bar">
-      <div className="progress" style={{ width: `${progress}%` }}></div>
+      <span className="progress-bar-fill" style={{ width: `${progress}%` }}>
+        {progress}%
+      </span>
     </div>
   );
 };
