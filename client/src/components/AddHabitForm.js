@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AddHabitForm.css';
+import ProgressBar from './ProgressBar';
+import TaskCompletionMarker from './TaskCompletionMarker';
 
 const AddHabitForm = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +17,8 @@ const AddHabitForm = () => {
     priority: 'medium'
   });
   const [habits, setHabits] = useState([]);
+  const [progress, setProgress] = useState(0);
+  const [daysCompleted, setDaysCompleted] = useState([false, false, false, false, false, false, false]);
   const navigate = useNavigate();
 
   const { name, description, frequency, startDate, reminders, goal, category, priority } = formData;
@@ -27,6 +31,7 @@ const AddHabitForm = () => {
           headers: { Authorization: token }
         });
         setHabits(res.data);
+        updateProgress(res.data);
       } catch (error) {
         console.error('Error fetching habits:', error);
       }
@@ -48,6 +53,7 @@ const AddHabitForm = () => {
       setHabits([...habits, res.data]);
       setFormData({ name: '', description: '', frequency: 'daily', startDate: '', reminders: false, goal: '', category: '', priority: 'medium' });
       alert('Habit added successfully!');
+      updateProgress([...habits, res.data]);
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to add habit');
@@ -57,6 +63,17 @@ const AddHabitForm = () => {
   const handleLogout = () => {
     localStorage.removeItem('authToken');
     navigate('/login');
+  };
+
+  const updateProgress = (habits) => {
+    let completed = 0;
+    const days = [false, false, false, false, false, false, false];
+    habits.forEach(habit => {
+      if (habit.completed) completed++;
+      if (habit.dayCompleted) days[habit.dayIndex] = true;
+    });
+    setProgress((completed / habits.length) * 100);
+    setDaysCompleted(days);
   };
 
   return (
@@ -108,10 +125,17 @@ const AddHabitForm = () => {
       </form>
       <div className="habit-list">
         <h2>Added Habits</h2>
+        <ProgressBar progress={progress} />
+        <TaskCompletionMarker daysCompleted={daysCompleted} />
         <ul>
           {habits.map(habit => (
             <li key={habit.id}>
               <strong>{habit.name}</strong>: {habit.description} ({habit.frequency})
+              <p>Start Date: {habit.startDate}</p>
+              <p>Reminders: {habit.reminders ? 'Yes' : 'No'}</p>
+              <p>Goal: {habit.goal}</p>
+              <p>Category: {habit.category}</p>
+              <p>Priority: {habit.priority}</p>
             </li>
           ))}
         </ul>
