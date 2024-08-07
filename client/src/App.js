@@ -11,6 +11,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/habits" element={<AddHabitForm />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </div>
   );

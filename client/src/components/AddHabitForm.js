@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AddHabitForm.css';
 
@@ -6,11 +7,17 @@ const AddHabitForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    frequency: ''
+    frequency: 'daily',
+    startDate: '',
+    reminders: false,
+    goal: '',
+    category: '',
+    priority: 'medium'
   });
   const [habits, setHabits] = useState([]);
+  const navigate = useNavigate();
 
-  const { name, description, frequency } = formData;
+  const { name, description, frequency, startDate, reminders, goal, category, priority } = formData;
 
   useEffect(() => {
     const fetchHabits = async () => {
@@ -29,6 +36,7 @@ const AddHabitForm = () => {
   }, []);
 
   const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const onCheck = e => setFormData({ ...formData, [e.target.name]: e.target.checked });
 
   const onSubmit = async e => {
     e.preventDefault();
@@ -38,7 +46,7 @@ const AddHabitForm = () => {
         headers: { Authorization: token }
       });
       setHabits([...habits, res.data]);
-      setFormData({ name: '', description: '', frequency: '' });
+      setFormData({ name: '', description: '', frequency: 'daily', startDate: '', reminders: false, goal: '', category: '', priority: 'medium' });
       alert('Habit added successfully!');
     } catch (error) {
       console.error('Error:', error);
@@ -46,8 +54,14 @@ const AddHabitForm = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    navigate('/login');
+  };
+
   return (
     <div className="habit-tracker">
+      <button onClick={handleLogout}>Log out</button>
       <form onSubmit={onSubmit} className="habit-form">
         <div>
           <label>Name:</label>
@@ -59,7 +73,36 @@ const AddHabitForm = () => {
         </div>
         <div>
           <label>Frequency:</label>
-          <input type="text" name="frequency" value={frequency} onChange={onChange} required />
+          <select name="frequency" value={frequency} onChange={onChange} required>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div>
+          <label>Start Date:</label>
+          <input type="date" name="startDate" value={startDate} onChange={onChange} required />
+        </div>
+        <div>
+          <label>Reminders:</label>
+          <input type="checkbox" name="reminders" checked={reminders} onChange={onCheck} />
+        </div>
+        <div>
+          <label>Goal:</label>
+          <input type="number" name="goal" value={goal} onChange={onChange} />
+        </div>
+        <div>
+          <label>Category:</label>
+          <input type="text" name="category" value={category} onChange={onChange} />
+        </div>
+        <div>
+          <label>Priority:</label>
+          <select name="priority" value={priority} onChange={onChange} required>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
         </div>
         <button type="submit">Add Habit</button>
       </form>
