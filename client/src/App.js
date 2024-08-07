@@ -1,13 +1,19 @@
 import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 import AddHabitForm from './components/AddHabitForm';
+import Login from './components/Login';
+import Register from './components/Register';
 
-const App = () => {
+function App() {
   return (
-    <div>
-      <h1>Habit Tracker</h1>
-      <AddHabitForm />
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/habits" element={<AddHabitForm />} />
+      </Routes>
     </div>
   );
-};
+}
 
 export default App;

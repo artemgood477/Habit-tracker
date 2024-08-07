@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './AddHabitForm.css'; // Create and import a CSS file for styling
+import './AddHabitForm.css';
 
 const AddHabitForm = () => {
   const [formData, setFormData] = useState({
@@ -8,7 +8,6 @@ const AddHabitForm = () => {
     description: '',
     frequency: ''
   });
-
   const [habits, setHabits] = useState([]);
 
   const { name, description, frequency } = formData;
@@ -16,7 +15,10 @@ const AddHabitForm = () => {
   useEffect(() => {
     const fetchHabits = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/habits');
+        const token = localStorage.getItem('token');
+        const res = await axios.get('http://localhost:5000/api/habits', {
+          headers: { Authorization: token }
+        });
         setHabits(res.data);
       } catch (error) {
         console.error('Error fetching habits:', error);
@@ -30,32 +32,17 @@ const AddHabitForm = () => {
 
   const onSubmit = async e => {
     e.preventDefault();
-    console.log('Form submitted:', formData); // Log the form data
-
     try {
-      const res = await axios.post('http://localhost:5000/api/habits', formData);
-      console.log('Response:', res.data); // Log the response data
-
-      // Update the habit list
+      const token = localStorage.getItem('token');
+      const res = await axios.post('http://localhost:5000/api/habits', formData, {
+        headers: { Authorization: token }
+      });
       setHabits([...habits, res.data]);
-
-      // Reset the form
       setFormData({ name: '', description: '', frequency: '' });
       alert('Habit added successfully!');
     } catch (error) {
-      console.error('Error:', error); // Log the error
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-        console.error('Response headers:', error.response.headers);
-        alert(`Failed to add habit: ${error.response.data}`);
-      } else if (error.request) {
-        console.error('Request data:', error.request);
-        alert('Failed to add habit: No response from server');
-      } else {
-        console.error('Error message:', error.message);
-        alert(`Failed to add habit: ${error.message}`);
-      }
+      console.error('Error:', error);
+      alert('Failed to add habit');
     }
   };
 
